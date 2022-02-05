@@ -18,6 +18,8 @@ class _LocationScreenState extends State<LocationScreen> {
   String weatherIcon;
   String cityName;
   String weatherMessage;
+  int feelslike;
+  int windspeed;
 
   @override
   void initState() {
@@ -33,14 +35,20 @@ class _LocationScreenState extends State<LocationScreen> {
         weatherIcon = 'Error';
         weatherMessage = 'Unable to get weather data';
         cityName = '';
+        feelslike = 0;
+        windspeed = 0;
         return;
       }
-      double temp = weatherData['main']['temp'];
-      temperature = temp.toInt();
+      temperature = weatherData['main']['temp'].toInt();
+      //temperature = temp.toInt();
       var condition = weatherData['weather'][0]['id'];
       weatherIcon = weather.getWeatherIcon(condition);
-      weatherMessage = weather.getMessage(temperature);
+      weatherMessage = weatherData['weather'][0]['description'];
       cityName = weatherData['name'];
+      double ffeelslike = weatherData['main']['feels_like'];
+      feelslike = ffeelslike.toInt();
+      double wind = weatherData['wind']['speed'];
+      windspeed = wind.toInt();
     });
   }
 
@@ -50,7 +58,7 @@ class _LocationScreenState extends State<LocationScreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('images/location_background.jpg'),
+            image: AssetImage('images/location.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
                 Colors.white.withOpacity(0.8), BlendMode.dstATop),
@@ -59,7 +67,7 @@ class _LocationScreenState extends State<LocationScreen> {
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Row(
@@ -106,18 +114,42 @@ class _LocationScreenState extends State<LocationScreen> {
                       '$temperature°',
                       style: kTempTextStyle,
                     ),
-                    Text(
-                      weatherIcon,
-                      style: kConditionTextStyle,
+                    SizedBox(width: 5.0),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 5.0),
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            weatherIcon,
+                            style: kConditionTextStyle,
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            'Wind Speed : $windspeed km/hr',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(right: 15.0),
+                padding: EdgeInsets.only(left: 15.0),
+                child: Text('$weatherMessage',
+                    style: TextStyle(
+                      fontFamily: 'Spartan MB',
+                      fontSize: 50.0,
+                    )),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 45.0),
                 child: Text(
-                  '$weatherMessage in $cityName',
-                  textAlign: TextAlign.right,
+                  'Feels like $feelslike° in $cityName',
+                  textAlign: TextAlign.center,
                   style: kMessageTextStyle,
                 ),
               ),
